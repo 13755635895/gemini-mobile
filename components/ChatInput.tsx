@@ -27,9 +27,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading }) => {
     setText('');
     setAttachment(undefined);
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    // On mobile, keep focus to allow rapid messaging, or blur to close keyboard? 
+    // Usually keeping focus is better for chat apps.
+    textareaRef.current?.focus(); 
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // On mobile, Enter usually creates a newline. We'll allow Shift+Enter for newline, Enter for send on desktop.
+    // For mobile UX, we often rely on the visual button, but standardizing is good.
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -42,7 +47,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        // Extract base64 part
         const base64Data = result.split(',')[1];
         setAttachment({
           mimeType: file.type,
@@ -51,26 +55,25 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading }) => {
       };
       reader.readAsDataURL(file);
     }
-    // Reset input so same file can be selected again
     e.target.value = '';
   };
 
   const removeAttachment = () => setAttachment(undefined);
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto p-4">
+    <div className="relative w-full max-w-4xl mx-auto p-3 sm:p-4">
       {/* Attachment Preview */}
       {attachment && (
-        <div className="absolute bottom-full left-6 mb-2 bg-slate-800 p-2 rounded-lg border border-slate-700 shadow-xl flex items-start gap-2 animate-fade-in-up">
+        <div className="absolute bottom-full left-4 sm:left-6 mb-2 bg-slate-800 p-2 rounded-lg border border-slate-700 shadow-xl flex items-start gap-2 animate-fade-in-up z-20">
             <div className="relative">
                 <img 
                     src={`data:${attachment.mimeType};base64,${attachment.data}`} 
                     alt="Preview" 
-                    className="h-20 w-20 object-cover rounded-md" 
+                    className="h-16 w-16 sm:h-20 sm:w-20 object-cover rounded-md" 
                 />
                 <button 
                     onClick={removeAttachment}
-                    className="absolute -top-2 -right-2 text-rose-500 bg-slate-900 rounded-full hover:text-rose-400"
+                    className="absolute -top-2 -right-2 text-rose-500 bg-slate-900 rounded-full hover:text-rose-400 p-0.5"
                 >
                     <XCircleIcon />
                 </button>
@@ -78,12 +81,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading }) => {
         </div>
       )}
 
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-lg flex items-end p-2 gap-2 focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
+      <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-lg flex items-end p-1.5 sm:p-2 gap-2 focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
         
         {/* Upload Button */}
         <button 
           onClick={() => fileInputRef.current?.click()}
-          className="p-3 text-slate-400 hover:text-blue-400 hover:bg-slate-700/50 rounded-xl transition-colors disabled:opacity-50"
+          className="p-3 text-slate-400 hover:text-blue-400 hover:bg-slate-700/50 rounded-xl transition-colors disabled:opacity-50 active:scale-95 transform"
           disabled={isLoading}
           title="Upload image"
         >
@@ -103,31 +106,32 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading }) => {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask anything, or describe an image..."
-          className="flex-1 bg-transparent text-slate-100 placeholder-slate-500 p-3 resize-none outline-none max-h-32 min-h-[44px]"
+          placeholder="Message..."
+          className="flex-1 bg-transparent text-slate-100 placeholder-slate-500 p-3 resize-none outline-none max-h-32 min-h-[48px] text-base"
           rows={1}
           disabled={isLoading}
+          style={{ fontSize: '16px' }} /* 16px prevents iOS zoom on focus */
         />
 
         {/* Send Button */}
         <button
           onClick={handleSend}
           disabled={(!text.trim() && !attachment) || isLoading}
-          className={`p-3 rounded-xl transition-all duration-200 ${
+          className={`p-3 rounded-xl transition-all duration-200 active:scale-95 transform ${
             (!text.trim() && !attachment) || isLoading
               ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
               : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-500/20'
           }`}
         >
           {isLoading ? (
-             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+             <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <SendIcon />
           )}
         </button>
       </div>
       
-      <div className="text-center mt-2">
+      <div className="text-center mt-2 hidden sm:block">
          <p className="text-xs text-slate-500">
              Powered by Gemini 2.5 Flash & 3.0 Pro
          </p>

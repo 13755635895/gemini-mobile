@@ -10,21 +10,21 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === Role.USER;
 
   return (
-    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-6`}>
-      <div className={`flex max-w-[85%] md:max-w-[75%] ${isUser ? 'flex-row-reverse' : 'flex-row'} items-start gap-3`}>
+    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4 sm:mb-6 animate-fade-in`}>
+      <div className={`flex max-w-[95%] sm:max-w-[85%] md:max-w-[75%] ${isUser ? 'flex-row-reverse' : 'flex-row'} items-start gap-2 sm:gap-3`}>
         
-        {/* Avatar */}
-        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${isUser ? 'bg-blue-600' : 'bg-gradient-to-br from-indigo-500 to-purple-600'}`}>
+        {/* Avatar - Slightly smaller on mobile if needed, but 8 is good size */}
+        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${isUser ? 'bg-blue-600' : 'bg-gradient-to-br from-indigo-500 to-purple-600'} shadow-md`}>
           {isUser ? (
-            <span className="text-xs font-bold text-white">YOU</span>
+            <span className="text-[10px] font-bold text-white">YOU</span>
           ) : (
             <SparklesIcon />
           )}
         </div>
 
         {/* Message Bubble */}
-        <div className={`flex flex-col gap-2 ${isUser ? 'items-end' : 'items-start'}`}>
-            <div className={`px-5 py-3 rounded-2xl shadow-sm text-sm md:text-base leading-relaxed whitespace-pre-wrap ${
+        <div className={`flex flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
+            <div className={`px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl shadow-sm text-[15px] sm:text-base leading-relaxed whitespace-pre-wrap break-words max-w-full ${
                 isUser 
                 ? 'bg-blue-600 text-white rounded-tr-sm' 
                 : 'bg-slate-800 text-slate-100 border border-slate-700 rounded-tl-sm'
@@ -61,7 +61,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 )}
             </div>
             
-            <span className="text-xs text-slate-500 px-1">
+            <span className="text-[10px] text-slate-500 px-1 opacity-70">
                 {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
         </div>
