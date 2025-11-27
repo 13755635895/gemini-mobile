@@ -1,0 +1,8 @@
+{
+  "name": "Gemini Omni-Chat",
+  "description": "A premium, multimodal AI assistant powered by Google Gemini. Supports text chat, image analysis, and code generation with a modern, responsive UI.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
